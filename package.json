@@ -1,0 +1,22 @@
+{
+  "name": "bed-ca1-joenc25",
+  "version": "1.0.0",
+  "description": "Manage gardens and plants, level up through completing various fitness challenges!",
+  "main": "index.js",
+  "author": "JoenC",
+  "license": "ISC",
+  "scripts": {
+    "populate_tables": "node src/configs/populateTables.js",
+    "dev": "nodemon index.js",
+    "init_tables": "node src/configs/createSchema.js && node src/configs/initTables.js",
+    "start": "npm run init_tables && npm run populate_tables && npm run dev"
+  },
+  "dependencies": {
+    "bcrypt": "^5.1.1",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "jsonwebtoken": "^9.0.2",
+    "mysql2": "^3.12.0",
+    "nodemon": "^3.1.9"
+  }
+}

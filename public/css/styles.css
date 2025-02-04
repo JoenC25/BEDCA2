@@ -1,0 +1,70 @@
+@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@300..700&display=swap');
+
+/* Basic styles */
+main {
+    min-height: calc(100vh - 56px - 56px);
+}
+
+body {
+    background-color: whitesmoke;
+    font-family: "Quicksand", serif;
+}
+
+h1 {
+    font-size: 40px;
+    font-weight: 550;
+}
+
+h2 {
+    font-size: 30px;
+    font-weight: 550;
+}
+
+h3, h4, h5, h6 {
+    font-weight: 600;
+}
+
+p {
+    line-height: 1.5rem;
+    font-weight: 450;
+}
+
+.navbar {
+    background-color: hsl(85, 24%, 50%);
+}
+
+footer {
+    background-color: hsl(85, 24%, 50%);
+}
+
+footer p {
+    font-size: 12px;
+    color: rgba(0,0,0,0.5);
+}
+
+/* Forms */
+#reviewForm label,
+#loginForm label,
+#registerForm label{
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+
+/* index.html */
+#indexHeader {
+    margin-top: 30px;
+    margin-bottom: 50px;
+}
+
+/* singleGardenInfo.html */
+.card-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+.card-buttons .wp-button, .card-buttons .rp-button {
+    flex: 1;
+    max-height: 75px;
+    max-width: 100px;
+    font-size: 15px;
+    line-height: 1.2rem;
+}
