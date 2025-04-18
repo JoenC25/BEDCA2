@@ -6,21 +6,38 @@ const jwtMiddleware = require('../middlewares/jwtMiddleware');
 const express = require("express");
 const router = express.Router();
 
-router.post("/",challengeController.ceateNewChallenge);
+router.post("/", jwtMiddleware.verifyToken, userController.checkUserById, challengeController.ceateNewChallenge);
 router.get("/", challengeController.readAllChallenge);
 
-router.put("/:challenge_id", challengeController.checkChallengeById, challengeController.checkCreatorUserId, challengeController.updateChallengeById);
-router.delete("/:challenge_id", challengeController.deleteById);
-router.post("/:challenge_id", 
-    jwtMiddleware.verifyToken,
-    challengeController.checkChallengeById, 
+router.get("/:challenge_id", challengeController.readByChallengeid)
+router.put("/:challenge_id", 
+    jwtMiddleware.verifyToken, 
     userController.checkUserById, 
-    challengeController.createNewCompletionRecord, 
-    challengeController.incrementSkillpoints,
+    
+    challengeController.checkChallengeById, 
+    challengeController.checkCreatorUserId, 
+
+    challengeController.updateChallengeById
+);
+router.delete("/:challenge_id", 
+    jwtMiddleware.verifyToken, 
+    userController.checkUserById, 
+    
+    challengeController.deleteById
+);
+
+router.post("/completion/:challenge_id", 
+    jwtMiddleware.verifyToken, 
+    userController.checkUserById,
+    challengeController.checkChallengeById, 
+
+    challengeController.incrementSkillpoints, 
     levelMiddleware.getLevelData, 
     levelMiddleware.getLevelRequirement, 
-    userController.levelUp
+    userController.levelUp,
+
+    challengeController.createNewCompletionRecord
 );
-router.get("/:challenge_id", challengeController.readCompletionById);
+router.get("/completion/:challenge_id", challengeController.readCompletionById);
 
 module.exports = router;

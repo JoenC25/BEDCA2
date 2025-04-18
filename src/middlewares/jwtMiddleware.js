@@ -41,18 +41,18 @@ module.exports.verifyToken = (req, res, next) => {
     const authHeader = req.headers.authorization;
 
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
-        return res.status(401).json({ error: 'No token provided' });
+        return res.status(401).json({ message: 'No token provided' });
     }
 
     const token = authHeader.substring(7);
 
     if (!token) {
-        return res.status(401).json({ error: "No token provided" });
+        return res.status(401).json({ message: "No token provided" });
     }
 
     const callback = (err, decoded) => {
         if (err) {
-            return res.status(401).json({ error: "Invalid token" });
+            return res.status(401).json({ message: "Invalid token" });
         }
         res.locals.user_id = decoded.user_id;
         res.locals.tokenTimestamp = decoded.timestamp;
@@ -61,3 +61,9 @@ module.exports.verifyToken = (req, res, next) => {
 
     jwt.verify(token, secretKey, callback); 
 };
+
+module.exports.showTokenVerified = (req, res, next) => {
+    res.status(200).json({
+        message: "Token is verified."
+    });
+}

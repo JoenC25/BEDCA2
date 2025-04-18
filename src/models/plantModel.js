@@ -8,11 +8,12 @@ module.exports.insertPlant = (data, callback) => {
         
         UPDATE User SET energy = energy - ? WHERE user_id = ?;
 
+        UPDATE Garden SET plant_count = plant_count + 1 WHERE garden_id = ?; 
+
         SELECT * FROM Plant
         INNER JOIN PlantTiers ON PlantTiers.tier_num = Plant.tier_num
-        WHERE plant_id = ?;
-
-        UPDATE Garden SET plant_count = plant_count + 1 WHERE garden_id = ?; 
+        INNER JOIN Garden ON Garden.garden_id = Plant.garden_id
+        WHERE plant_id = LAST_INSERT_ID();
     `;
     // Insert plant, update user's energy, returns created plant, and updates plant count for that garden
     const VALUES = [data.garden_id, data.plant_name, data.energy_deduction, data.user_id, data.garden_id];
@@ -50,6 +51,7 @@ module.exports.updatePlantTier = (data, callback) => {
 
         SELECT * FROM Plant
         INNER JOIN PlantTiers ON PlantTiers.tier_num = Plant.tier_num
+        INNER JOIN Garden ON Garden.garden_id = Plant.garden_id
         WHERE plant_id = ?;
 
         UPDATE User 
@@ -61,9 +63,10 @@ module.exports.updatePlantTier = (data, callback) => {
     pool.query(SQLSTATEMENT, VALUES, callback);
 }
 
+// Select plants by garden
 module.exports.selectPlantByGardenid = (data, callback) => {
     const SQLSTATEMENT = `
-        SELECT Plant.plant_name, Plant.plant_id, PlantTiers.tier_name, Plant.tier_num, Garden.owner_id FROM Plant
+        SELECT Plant.plant_name, Plant.plant_id, PlantTiers.tier_name, Plant.tier_num, Garden.owner_id, Plant.created_on FROM Plant
         INNER JOIN PlantTiers ON PlantTiers.tier_num = Plant.tier_num
         INNER JOIN Garden ON Garden.garden_id = Plant.garden_id
         WHERE Plant.garden_id = ?;

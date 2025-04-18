@@ -63,7 +63,7 @@ module.exports.getAllGardens = (req, res, next) => {
 }
 
 // GET Garden by Garden id
-module.exports.getGardenById = (req, res, next) => {
+module.exports.getGardenById = (req, res, next) => { 
     const data = {
         garden_id: req.params.garden_id
     }
@@ -77,7 +77,14 @@ module.exports.getGardenById = (req, res, next) => {
                 message: "garden not found with requested garden_id"
             });
         } else {
-            res.status(200).json(results[0]);
+            res.status(200).json({
+                ...results[0],
+                ownership: results[0].owner_id == res.locals.user_id,
+                energy_deduction: res.locals.energy_deduction,
+                message: res.locals.message,
+                insufficient_energy: res.locals.insufficient_energy,
+                resting: res.locals.resting
+            });
         }
     }
     model.selectById(data, callback);
@@ -102,9 +109,11 @@ module.exports.createGarden = (req, res, next) => {
             console.error("Error createGarden:", error);
             res.status(500).json(error);
         } else {
-            res.status(201).json(results[1][0]);
+            res.status(201).json({
+                ...results[1][0],
+                message: `Garden '${req.body.garden_name}' created!`
+            });
         }
     }
     model.insertSingle(data, callback)
 }
-

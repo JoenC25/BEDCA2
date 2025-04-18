@@ -33,13 +33,14 @@ const SQLSTATEMENT = `
         challenge_id INT NOT NULL,
         user_id INT NOT NULL,
         completed BOOL NOT NULL,
-        creation_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        notes TEXT
+        notes TEXT,
+        creation_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );
 
     CREATE TABLE Reviews (
         review_id INT PRIMARY KEY AUTO_INCREMENT,
         review_amt INT NOT NULL,
+        challenge_id INT NOT NULL,
         notes TEXT,
         user_id INT NOT NULL,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -86,7 +87,7 @@ const SQLSTATEMENT = `
 
     INSERT INTO Levels (level, required_points) VALUES
     (1, 50),
-    (2, 100),
+    (2, 150),
     (3, 300),
     (4, 600),
     (5, 1000),

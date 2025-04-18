@@ -36,11 +36,11 @@ module.exports.selectAll = (callback) => {
 module.exports.updateById = (data, callback) => {
     const SQLSTATEMENT = `
         UPDATE FitnessChallenge
-        SET challenge = ?, creator_id = ?, skillpoints = ?
+        SET challenge = ?, skillpoints = ?
         WHERE challenge_id = ?;
         SELECT * FROM FitnessChallenge WHERE challenge_id = ?;
     `;
-    const VALUES = [data.challenge, data.creator_id, data.skillpoints, data.challenge_id, data.challenge_id];
+    const VALUES = [data.challenge, data.skillpoints, data.challenge_id, data.challenge_id];
 
     pool.query(SQLSTATEMENT, VALUES, callback);
 }
@@ -59,12 +59,14 @@ module.exports.removeById = (data, callback) => {
 // ENDPOINT 8
 module.exports.insertSingleCompletion = (data, callback) => {
     const SQLSTATEMENT = `
-        INSERT INTO UserCompletion (challenge_id, user_id, completed, creation_date, notes) 
-        VALUES (?, ?, ?, ?, ?);
-        SELECT complete_id, challenge_id, user_id, completed, DATE(creation_date) AS creation_date, notes
-        FROM UserCompletion WHERE complete_id = LAST_INSERT_ID();
+        INSERT INTO UserCompletion (challenge_id, user_id, completed, notes) 
+        VALUES (?, ?, ?, ?);
+
+        SELECT * FROM UserCompletion 
+        INNER JOIN FitnessChallenge ON FitnessChallenge.challenge_id = UserCompletion.challenge_id
+        WHERE complete_id = LAST_INSERT_ID();
     `;
-    const VALUES = [data.challenge_id, data.user_id, data.completed, data.creation_date, data.notes];
+    const VALUES = [data.challenge_id, data.user_id, data.completed, data.notes];
 
     pool.query(SQLSTATEMENT, VALUES, callback);
 }
@@ -83,8 +85,7 @@ module.exports.updateSkillpoints = (data, callback) => {
 // ENDPOINT 9
 module.exports.selectCompletionById = (data, callback) => {
     const SQLSTATEMENT = `
-        SELECT user_id, completed, DATE(creation_date) AS creation_date, notes 
-        FROM UserCompletion
+        SELECT * FROM UserCompletion
         WHERE challenge_id = ?;
     `;
     const VALUES = [data.challenge_id];

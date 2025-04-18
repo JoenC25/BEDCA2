@@ -20,14 +20,12 @@ module.exports.createPlant = (req, res, next) => {
         if (error) {
             console.error("Error createPlant:", error);
             res.status(500).json(error);
-        } else if (res.locals.energy < energy_deduction){
-            res.status(409).json({
-                message: "insufficient energy"
-            });
         } else {
             res.status(201).json({
-                plant: results[2][0],
-                message: `-${res.locals.energy_deduction} energy`
+                ...results[3][0],
+                ownership: results[3][0].owner_id == res.locals.user_id,
+                energy: `Energy remaining: ${res.locals.energy - res.locals.energy_deduction}`,
+                message: `Plant '${req.body.plant_name}' created! (-${res.locals.energy_deduction} energy)`
             });
         }
     }
@@ -102,7 +100,11 @@ module.exports.getPlantsByGardenId = (req, res, next) => {
             res.status(200).json(
                 results.map(plant => ({
                     ...plant,
-                    ownership: plant.owner_id == res.locals.user_id
+                    ownership: plant.owner_id == res.locals.user_id,
+                    energy_deduction: res.locals.energy_deduction,
+                    message: res.locals.message,
+                    insufficient_energy: res.locals.insufficient_energy,
+                    resting: res.locals.resting
                 }))
             );
         }
@@ -134,8 +136,10 @@ module.exports.waterPlant = (req, res, next) => {
             });
         } else {
             res.status(200).json({
-                plant: results[1][0],
-                message: `-${res.locals.energy_deduction} energy`
+                ...results[1][0],
+                ownership: results[1][0].owner_id == res.locals.user_id,
+                energy: `Energy remaining: ${res.locals.energy - res.locals.energy_deduction}`,
+                message: `'${results[1][0].plant_name}' Tier UP! (-${res.locals.energy_deduction} energy)`
             });
         }
     }

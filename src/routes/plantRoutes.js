@@ -8,14 +8,15 @@ const jwtMiddleware = require('../middlewares/jwtMiddleware');
 const express = require("express")
 const router = express.Router();
 
+// Create/Plant plants
 router.post('/', 
     jwtMiddleware.verifyToken, 
     userController.checkUserById, 
 
-    restMiddleware.calculateAwake, // 409
+    restMiddleware.checkResting, // 409
     levelMiddleware.getLevelData, 
     restMiddleware.getEnergy, 
-    restMiddleware.calculateEnergyPlant, // 409
+    restMiddleware.calculateEnergyPlant,
 
     gardenController.checkGardenExists, // 404
     gardenController.checkOwnership, // 403
@@ -25,6 +26,7 @@ router.post('/',
 
 router.get('/:plant_id', plantController.readSinglePlant)
 
+// Rename Plant
 router.put('/:plant_id', 
     jwtMiddleware.verifyToken, 
     userController.checkUserById, 
@@ -32,11 +34,12 @@ router.put('/:plant_id',
     plantController.updatePlant
 );
 
+// Water plant
 router.put('/:plant_id/water', 
     jwtMiddleware.verifyToken, 
     userController.checkUserById, 
     
-    restMiddleware.calculateAwake, 
+    restMiddleware.checkResting, 
     levelMiddleware.getLevelData, 
     restMiddleware.getEnergy, 
     restMiddleware.calculateEnergyPlant,

@@ -14,6 +14,7 @@
       crossorigin="anonymous"
     /> 
     <link href="css/styles.css" rel="stylesheet">
+    <link href="css/popup.css" rel="stylesheet">
 </head>
 <body>
     <!-- Navbar -->
@@ -84,6 +85,131 @@
                 <h1 class="text-center">Your Gardens</h1>
             </div>
             <div id="gardenList" class="row"></div>
+            <button class="btn btn-secondary" id="buildg-button">Build a Garden</button>
+        </div>
+        <div class="container py-4">
+            <div class="col-12">
+                <h1 class="text-center">Your Created Challenges</h1>
+            </div>
+            <div id="challengeList" class="row"></div>
+            <div class="card-buttons">
+                <button class="btn btn-secondary" id="createc-button">Create a Challenge</button>
+                <button class="btn btn-danger" id="dc-button">REMOVE a Challenge</button>
+            </div>
+        </div>
+        <div class="container py-4">
+            <div class="col-12">
+                <h1 class="text-center">Your Challenge Log</h1>
+            </div>
+            <div id="completionList" class="row"></div>
+            <div class="col-12 text-center">
+                <h3 class="text-center p-3">Rate a Challenge?</h3>
+                <a class="btn btn-cred" href="review.html">Press Me!</a>
+            </div>
+        </div>
+
+        <!-- Create Rest popup (cr) -->
+        <div class="popup d-none" id="cr-popup" role="alert">
+        <div class="popup-container p-4">
+           <p>Are you sure you want to rest?</p>
+            <button class="popup-close btn btn-success px-3" id="cr-confirm">Yes</button>
+            <button class="popup-close btn btn-danger px-3" id="cr-popup-close">Cancel</button>
+            </div>
+        </div>
+
+        <!-- Build Garden popup (buildg) -->
+        <div class="popup d-none" id="buildg-popup" role="alert">
+            <div class="popup-container p-4">
+               <p>Build Garden</p>
+               <form class="popup-form" id="buildg-form">
+                    <div class="form-group mb-4">
+                        <label for="gardenName">Enter garden name</label>
+                        <input type="text" class="form-control" id="gardenName">
+                    </div>
+                </form>
+               <button class="popup-close btn btn-success px-3" id="buildg-confirm">Create</button>
+               <button class="popup-close btn btn-danger px-3" id="buildg-popup-close">Cancel</button>
+            </div>
+        </div>
+
+        <!-- Create Challenge popup (createc)-->
+        <div class="popup d-none" id="createc-popup" role="alert">
+            <div class="popup-container p-4">
+               <p>Create Challenge</p>
+               <form class="popup-form" id="createc-form">
+                <div class="form-group mb-4">
+                    <label class="form-label" for="newChallengeName">Challenge Name</label>
+                    <input type="text" class="form-control" id="newChallengeName">
+                </div>
+                <div class="form-group mb-4">
+                    <label class="form-label" for="newSkillpointsAwarded">Skillpoints Awarded</label>
+                    <input type="text" class="form-control" id="newSkillpointsAwarded">
+                </div>
+                </form>
+               <button class="popup-close btn btn-success px-3" id="createc-confirm">Create</button>
+               <button class="popup-close btn btn-danger px-3" id="createc-popup-close">Cancel</button>
+            </div>
+        </div>
+
+        <!-- Delete Challenge popup (dc)-->
+        <div class="popup d-none" id="dc-popup" role="alert">
+            <div class="popup-container p-4">
+               <p>Delete Challenge</p>
+               <form class="popup-form" id="dc-form">
+                    <div class="form-group mb-4">
+                        <label class="form-label" for="challengeSelect">Select Challenge</label>
+                        <select class="form-control form-select" id="challengeSelect"></select>
+                    </div>
+               </form>
+                <button class="popup-close btn btn-success px-3" id="dc-confirm">Confirm</button>
+                <button class="popup-close btn btn-danger px-3" id="dc-popup-close">Cancel</button>
+            </div>
+        </div>
+
+        <!-- completeChallenge popup (cc) -->
+        <div class="popup d-none" id="cc-popup" role="alert">
+            <div class="popup-container p-4" id="cc-popup-container">
+                <p>Complete Challenge</p>
+                <form class="popup-form" id="cc-form">
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="checkbox" value="" id="completed">
+                        <label class="form-check-label" for="completed">I have completed the challenge</label>
+                        <p class="mt-2 text-muted">Leave unchecked if challenge not completed</p>
+                    </div>
+                    <div class="form-group mb-4">
+                        <label for="notes">Notes (optional)</label>
+                        <input type="text" class="form-control" id="notes" placeholder="Say somethng about your completion">
+                    </div>
+                </form>
+                <button class="popup-close btn btn-success px-3" id="cc-confirm">Submit</button>
+                <button class="popup-close btn btn-danger px-3" id="cc-popup-close">Cancel</button>
+            </div>
+        </div>
+
+        <!-- editChallenge popup (ec) -->
+        <div class="popup d-none" id="ec-popup" role="alert">
+            <div class="popup-container p-4" id="ec-popup-container">
+            <p>Edit Challenge Info</p>
+            <form class="popup-form" id="ec-form">
+                    <div class="form-group mb-4">
+                        <label class="form-label" for="challengeName">Challenge Name</label>
+                        <input type="text" class="form-control" id="challengeName">
+                    </div>
+                    <div class="form-group mb-4">
+                        <label class="form-label" for="skillpointsAwarded">Skillpoints Awarded</label>
+                        <input type="text" class="form-control" id="skillpointsAwarded">
+                    </div>
+                </form>
+            <button class="popup-close btn btn-success px-3" id="ec-confirm">Confirm</button>
+            <button class="popup-close btn btn-danger px-3" id="ec-popup-close">Cancel</button>
+            </div>
+        </div>
+
+        <!-- customAlert box -->
+        <div class="popup d-none" id="customAlert">
+            <div class="popup-container card">
+                <div class="card-body" id="customAlertText"></div>
+            </div>
         </div>
     </main>
 
@@ -104,11 +230,16 @@
         integrity="sha384-fbbOQedDUMZZ5KreZpsbe1LCZPVmfTnH7ois6mU1QK+m14rQ1l2bGBq41eYeM/fS"
         crossorigin="anonymous">
     </script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    
     <!-- js scripts -->
     <script src="js/fetchMethod/queryCmds.js" type="text/javascript"></script>
     <script src="js/fetchMethod/getCurrentURL.js" type="text/javascript"></script>
+
     <script src="js/userNavbarToggle.js" type="text/javascript"></script>
+    <script src="js/popupMenu.js" type="text/javascript"></script>
+    <script src="js/customAlert.js" type="text/javascript"></script>
+
     <script src="js/users/showSingleUserInfo.js" type="text/javascript"></script>
-    <script src="js/gardens/showUserGardens.js" type="text/javascript"></script>
 </body>
 </html>

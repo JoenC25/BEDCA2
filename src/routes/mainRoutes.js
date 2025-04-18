@@ -20,4 +20,6 @@ const bcryptMiddleware = require('../middlewares/bcryptMiddleware');
 router.post("/login", userController.login, bcryptMiddleware.comparePassword, jwtMiddleware.generateToken, jwtMiddleware.sendToken);
 router.post("/register", userController.checkUsernameOrEmailExists, bcryptMiddleware.hashPassword, userController.register, jwtMiddleware.generateToken, jwtMiddleware.sendToken);
 
+router.get("/jwt/verify", jwtMiddleware.verifyToken, jwtMiddleware.showTokenVerified);
+
 module.exports = router;

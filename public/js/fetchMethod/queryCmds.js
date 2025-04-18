@@ -1,5 +1,5 @@
 function fetchMethod(url, callback, method = "GET", data = null, token = null) {
-    console.log("fetchMethod: ", url, method, data, token);
+    console.log("fetchMethod: ", url, method, data, (token!=undefined));
   
     const headers = {};
   

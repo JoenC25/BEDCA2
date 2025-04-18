@@ -16,7 +16,7 @@ module.exports.readAllReview = (req, res, next) => {
 
 // Creates a review
 module.exports.createReview = (req, res, next) => {
-    if(req.body.review_amt == undefined) {
+    if(req.body.review_amt == undefined || req.body.challenge_id == undefined) {
         res.status(400).json({
             message: "request body missing required fields"
         });
@@ -31,6 +31,7 @@ module.exports.createReview = (req, res, next) => {
     const data = {
         user_id: res.locals.user_id,
         review_amt: req.body.review_amt,
+        challenge_id: req.body.challenge_id,
         notes: req.body.notes
     }
 
@@ -70,7 +71,7 @@ module.exports.readReviewById = (req, res, next) => {
 
 // Updates review by review id
 module.exports.updateReviewById = (req, res, next) => {
-    if(req.body.review_amt == undefined) {
+    if(req.body.review_amt == undefined || req.body.challenge_id == undefined) {
         res.status(400).json({
             message: "request body missing required fields"
         });
@@ -86,6 +87,7 @@ module.exports.updateReviewById = (req, res, next) => {
         review_id: req.params.id,
         notes: req.body.notes,
         review_amt: req.body.review_amt,
+        challenge_id: req.body.challenge_id,
         user_id: res.locals.user_id
     }
 

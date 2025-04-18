@@ -31,7 +31,7 @@ module.exports.checkCreatorUserId = (req, res, next) => {
         if (error) {
             console.error("Error updateChallengeById: ", error);
             res.status(500).json(error);
-        } else if (results[0].creator_id != req.body.user_id) {
+        } else if (results[0].creator_id != res.locals.user_id) {
             res.status(403).json({
                 message: "user_id is not same as creator_id"
             });
@@ -44,16 +44,21 @@ module.exports.checkCreatorUserId = (req, res, next) => {
 
 // ENDPOINT 4
 module.exports.ceateNewChallenge = (req, res, next) => {
-    if (req.body.challenge == undefined || req.body.user_id == undefined || req.body.skillpoints == undefined ) {
-        res.status(400).send({
-            message: "Request body challenge, user_id or skillpoints is undefined"
+    if (req.body.challenge == undefined || req.body.skillpoints == undefined ) {
+        res.status(400).json({
+            message: "Request body challenge or skillpoints is undefined"
+        });
+        return; 
+    } else if (!Number.isInteger(Number(req.body.skillpoints))) {
+        res.status(400).json({
+            message: "Skillpoints must be an integer"
         });
         return; 
     }
 
     const data = {
         challenge: req.body.challenge,
-        creator_id: req.body.user_id,
+        creator_id: res.locals.user_id,
         skillpoints: req.body.skillpoints
     }
 
@@ -62,13 +67,10 @@ module.exports.ceateNewChallenge = (req, res, next) => {
             console.error("Error createNewUser:", error);
             res.status(500).json(error);
         } else {
-            const newChallenge = results[1][0];
-
             res.status(201).json({
-                challenge_id: newChallenge.challenge_id,
-                challenge: newChallenge.challenge,
-                creator_id: newChallenge.creator_id,
-                skillpoints: newChallenge.skillpoints
+                ...results[1][0], 
+                ownership: results[1][0].creator_id == res.locals.user_id,
+                message: `Challenge created!`
             });
         }
     }
@@ -82,7 +84,10 @@ module.exports.readAllChallenge = (req, res, next) => {
             console.error("Error readAllChallenge:", error);
             res.status(500).json(error);
         } else {
-            res.status(201).json(results);
+            res.status(200).json(results.map(challenge => ({
+                ...challenge,
+                ownership: challenge.creator_id == res.locals.user_id
+            })));
         }
     }
     model.selectAll(callback);
@@ -90,9 +95,9 @@ module.exports.readAllChallenge = (req, res, next) => {
 
 // ENDPOINT 6
 module.exports.updateChallengeById = (req, res, next) => {
-    if (req.body.challenge == undefined || req.body.user_id == undefined || req.body.skillpoints == undefined ) {
+    if (req.body.challenge == undefined || req.body.skillpoints == undefined ) {
         res.status(400).send({
-            message: "Request body challenge, user_id or skillpoints is missing"
+            message: "Request body challenge or skillpoints is missing"
         });
         return; 
     }
@@ -101,7 +106,7 @@ module.exports.updateChallengeById = (req, res, next) => {
         challenge_id: req.params.challenge_id,
         challenge: req.body.challenge,
         skillpoints: req.body.skillpoints,
-        creator_id: req.body.user_id
+        creator_id: res.locals.user_id
     }
 
     const callback = (error, results, fields) => {
@@ -109,13 +114,9 @@ module.exports.updateChallengeById = (req, res, next) => {
             console.error("Error updateChallengeById: ", error);
             res.status(500).json(error);
         } else {
-            const newChallenge = results[1][0];
-
             res.status(200).json({
-                challenge_id: newChallenge.challenge_id,
-                challenge: newChallenge.challenge,
-                creator_id: newChallenge.creator_id,
-                skillpoints: newChallenge.skillpoints
+                ...results[1][0],
+                message: "Challenge updated"
             });
         }
     }
@@ -145,18 +146,17 @@ module.exports.deleteById = (req, res, next) => {
 
 // ENDPOINT 8
 module.exports.createNewCompletionRecord = (req, res, next) => {
-    if (req.body.creation_date == undefined) {
-        res.status(400).json({
-            message: "creation_date is missing"
+    if (req.body.completed == undefined) {
+        res.status(400).send({
+            message: "Request body missing completed"
         });
-        return;
+        return; 
     }
 
     const data = {
         challenge_id: req.params.challenge_id,
         user_id: res.locals.user_id,
         completed: req.body.completed,
-        creation_date: req.body.creation_date,
         notes: req.body.notes
     }
 
@@ -166,16 +166,24 @@ module.exports.createNewCompletionRecord = (req, res, next) => {
             res.status(500).json(error);
         } else {
             const newCompletion = results[1][0];
+            if (newCompletion.completed) {
+                message = "Challenge Completed! Check your profile for completion log"
+            } else {
+                message = "Challenge not Completed! Have another go at it some time..."
+            }
+            
+            res.status(201).json(
+                results[1].map(completion => ({
+                ...completion,
+                completed: Boolean(completion.completed),
+                
+                skillpoints: res.locals.levelData.skillpoints,
+                level: res.locals.levelData.level,
+                leveled_up: res.locals.leveled_up,
+                message: message
+                }))[0]
+            )
 
-            res.status(201).json({
-                complete_id: newCompletion.complete_id,
-                challenge_id: newCompletion.challenge_id,
-                user_id: newCompletion.user_id,
-                completed: Boolean(newCompletion.completed),
-                creation_date: newCompletion.creation_date,
-                notes: newCompletion.notes
-            });
-            next();
         }
     }
     model.insertSingleCompletion(data, callback);
@@ -218,12 +226,38 @@ module.exports.readCompletionById = (req, res, next) => {
                 message: "requested challenge_id does not have any user attempts"
             });
         } else {
-            res.status(200).json(results.map(obj => ({
-                ...obj,
-                completed: Boolean(obj.completed)
-              }))
-            );
+            const completion = results[0];
+            res.status(200).json({
+                complete_id: completion.complete_id,
+                challenge_id: completion.challenge_id,
+                user_id: completion.user_id,
+                completed: Boolean(completion.completed),
+                notes: completion.notes,
+                creation_date: completion.creation_date,
+                challenge: completion.challenge
+            });
         }
     }
     model.selectCompletionById(data, callback);
+}
+
+// GET by challenge_id
+module.exports.readByChallengeid = (req, res, next) => {
+    const data = {
+        challenge_id: req.params.challenge_id
+    }
+
+    const callback = (error, results, fields) => {
+        if (error) {
+            console.error("Error readByChallengeid: ", error);
+            res.status(500).json(error);
+        } else if (results.length == 0) {
+            res.status(404).json({
+                message: "requested challenge_id does not exist"
+            });
+        } else {
+            res.status(200).json(results[0]);
+        }
+    }
+    model.findChallengeId(data, callback)
 }

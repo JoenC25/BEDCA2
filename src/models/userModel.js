@@ -59,7 +59,7 @@ module.exports.updateById = (data, callback) => {
 
 // SECTION B
 // Rest Function
-module.exports.findUseridRest = (data, callback) => {
+module.exports.selectRestByUserid = (data, callback) => {
     const SQLSTATEMENT = `
         SELECT * FROM Rest
         WHERE user_id = ?;
@@ -105,7 +105,7 @@ module.exports.findRequiredPoints = (data, callback) => {
 
 module.exports.updateLevel = (data, callback) => {
     const SQLSTATEMENT = `
-        UPDATE User SET level = ? WHERE user_id = ?;
+        UPDATE User SET level = ? WHERE user_id = ?;   
     `;
     const VALUES = [data.level, data.user_id];;
 
@@ -130,6 +130,28 @@ module.exports.selectByUsernameOrEmail = (data, callback) => {
         SELECT * FROM User WHERE username = ? or email = ?;
     `;
     const VALUES = [data.username, data.email];
+
+    pool.query(SQLSTATEMENT, VALUES, callback);
+}
+
+// Select Garden by Userid
+module.exports.selectCompletionByUserid = (data, callback) => {
+    const SQLSTATEMENT = `
+        SELECT * FROM UserCompletion
+        INNER JOIN FitnessChallenge ON FitnessChallenge.challenge_id = UserCompletion.challenge_id
+        WHERE user_id = ?;
+    `;
+    const VALUES = [data.user_id];
+
+    pool.query(SQLSTATEMENT, VALUES, callback);
+}
+
+module.exports.selectChallengeByUserid = (data, callback) => {
+    const SQLSTATEMENT = `
+        SELECT * FROM FitnessChallenge
+        WHERE creator_id = ?;
+    `;
+    const VALUES = [data.creator_id];
 
     pool.query(SQLSTATEMENT, VALUES, callback);
 }

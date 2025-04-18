@@ -15,6 +15,7 @@
     /> 
     <!-- Link to css -->
     <link href="css/styles.css" rel="stylesheet">
+    <link href="css/popup.css" rel="stylesheet">
 </head>
 <body>
     <!-- Navbar -->
@@ -53,7 +54,7 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item">
-                        <a id="profileButton" href="singleUserInfo.html" class="nav-link">Your Profile</a>
+                        <a id="profileButton" href="profile.html" class="nav-link">Your Profile</a>
                     </li>
                     <li class="nav-item">
                         <a id="logoutButton" href="#" class="nav-link">Logout</a>
@@ -80,6 +81,52 @@
         </div>
     </main>
 
+    <!-- completeChallenge popup (cc) -->
+    <div class="popup d-none" id="cc-popup" role="alert">
+        <div class="popup-container p-4" id="cc-popup-container">
+            <p>Complete Challenge</p>
+            <form class="popup-form" id="cc-form">
+                <div class="form-check mb-3">
+                    <input class="form-check-input" type="checkbox" value="" id="completed">
+                    <label class="form-check-label" for="completed">I have completed the challenge</label>
+                    <p class="mt-2 text-muted">Leave unchecked if challenge not completed</p>
+                </div>
+                <div class="form-group mb-4">
+                    <label for="notes">Notes (optional)</label>
+                    <input type="text" class="form-control" id="notes" placeholder="Say somethng about your completion">
+                </div>
+            </form>
+            <button class="popup-close btn btn-success px-3" id="cc-confirm">Yes</button>
+            <button class="popup-close btn btn-danger px-3" id="cc-popup-close">Cancel</button>
+        </div>
+    </div>
+
+     <!-- editChallenge popup (ec) -->
+     <div class="popup d-none" id="ec-popup" role="alert">
+        <div class="popup-container p-4" id="ec-popup-container">
+           <p>Edit Challenge Info</p>
+           <form class="popup-form" id="ec-form">
+                <div class="form-group mb-4">
+                    <label class="form-label" for="challengeName">Challenge Name</label>
+                    <input type="text" class="form-control" id="challengeName">
+                </div>
+                <div class="form-group mb-4">
+                    <label class="form-label" for="skillpointsAwarded">Skillpoints Awarded</label>
+                    <input type="text" class="form-control" id="skillpointsAwarded">
+                </div>
+            </form>
+           <button class="popup-close btn btn-success px-3" id="ec-confirm">Yes</button>
+           <button class="popup-close btn btn-danger px-3" id="ec-popup-close">Cancel</button>
+        </div>
+    </div>
+
+    <!-- customAlert box -->
+    <div class="popup d-none" id="customAlert">
+        <div class="popup-container card">
+            <div class="card-body" id="customAlertText"></div>
+        </div>
+    </div>
+
     <footer class="mt-auto py-3 text-center">
         <p class="m-0 py-0 px-4">
             Created by JoenC. For the Back-End Web Development Module.
@@ -97,9 +144,15 @@
         integrity="sha384-fbbOQedDUMZZ5KreZpsbe1LCZPVmfTnH7ois6mU1QK+m14rQ1l2bGBq41eYeM/fS"
         crossorigin="anonymous">
     </script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
     <!-- js scripts -->
     <script src="js/fetchMethod/queryCmds.js" type="text/javascript"></script>
     <script src="js/fetchMethod/getCurrentURL.js" type="text/javascript"></script>
+
     <script src="js/userNavbarToggle.js" type="text/javascript"></script>
+    <script src="js/popupMenu.js" type="text/javascript"></script>
+    <script src="js/customAlert.js" type="text/javascript"></script>
+
     <script src="js/challenges/showChallengesInfo.js" type="text/javascript"></script>
 </body>

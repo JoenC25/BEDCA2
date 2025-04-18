@@ -1,3 +1,4 @@
+const { compareSync } = require('bcrypt');
 const model = require('../models/userModel');
 
 // Middleware
@@ -109,6 +110,27 @@ module.exports.updateUserById = (req, res, next) => {
     model.updateById(data, callback);
 }
 
+// GET user by user_id
+module.exports.readUserById = (req, res) => {
+    const data = {
+        user_id: res.locals.user_id
+    }
+
+    const callback = (error, results, fields) => {
+        if (error) {
+            console.error("Error readUserById", error);
+            res.status(500).json(error);
+        } else if (results.length == 0) {
+            res.status(404).json({
+                message: "requested user_id does not exist"
+            });
+        } else {
+            res.status(200).json(results[0])
+        }
+    }
+    model.findUserid(data, callback);
+}
+
 
 //  SECTION B
 // POST Rest
@@ -126,7 +148,7 @@ module.exports.createRest = (req, res, next) => {
             res.status(500).json(error);
         } else {
             res.status(201).json({
-                rest: results[2][0],
+                ...results[2][0],
                 message: `resting for: ${rest_time} minutes`
             });
         }
@@ -135,8 +157,57 @@ module.exports.createRest = (req, res, next) => {
     model.insertRest(data, callback);
 }
 
-// GET Rest
-module.exports.readRestByUserId = (req, res, next) => {
+
+// Update Level of User
+module.exports.levelUp = (req, res, next) => {
+    if (res.locals.levelData.skillpoints >= res.locals.required_points) {
+        res.locals.levelData.level += 1;
+        res.locals.leveled_up = true;
+    } else {
+        res.locals.leveled_up = false;
+    }
+
+    const data = {
+        level: res.locals.levelData.level,
+        user_id: res.locals.user_id
+    }
+
+    const callback = (error, results) => {
+        if (error) {
+            console.error("Error levelUp:", error);
+            res.status(500).json(error);
+        } else {
+            next();
+        }
+    }
+    model.updateLevel(data, callback);
+}
+
+
+// GET challenges by user_id
+module.exports.readChallengesByUserid = (req, res, next) => {
+    const data = {
+        creator_id : res.locals.user_id
+    }
+
+    const callback = (error, results) => {
+        if (error) {
+            console.error("Error readChallengesByUserid:", error);
+            res.status(500).json(error);
+        } else if (results.length == 0) {
+            res.status(404).json({
+                message: "challenge data not found"
+            });
+        } else {
+            res.status(200).json(results);
+        }
+    }
+
+    model.selectChallengeByUserid(data, callback);
+}
+
+// GET Rest by user_id
+module.exports.readRestByUserid = (req, res, next) => {
     const data = {
         user_id : res.locals.user_id
     }
@@ -154,40 +225,49 @@ module.exports.readRestByUserId = (req, res, next) => {
         }
     }
 
-    model.findUseridRest(data, callback);
+    model.selectRestByUserid(data, callback);
 }
 
-
-// Updating Level of User
-module.exports.levelUp = (req, res, next) => {
-    if (res.locals.levelData.skillpoints >= res.locals.required_points) {
-        res.locals.levelData.level += 1
-    }
-
+// GET completion by user_id
+module.exports.readCompletionByUserid = (req, res, next) => {
     const data = {
-        level: res.locals.levelData.level,
-        user_id: res.locas.user_id
-    }
+        user_id: res.locals.user_id
+    };
 
     const callback = (error, results) => {
         if (error) {
-            console.error("Error levelUp:", error);
+            console.error("Error readCompletionByUserid", error);
             res.status(500).json(error);
+        } else if (results.length == 0) {
+            res.status(404).json({
+                message: "user does not have any completion records"
+            });
+        } else {
+            res.status(200).json(
+                results.map(completion => ({
+                    complete_id: completion.complete_id,
+                    challenge_id: completion.challenge_id,
+                    user_id: completion.user_id,
+                    completed: Boolean(completion.completed),
+                    notes: completion.notes,
+                    creation_date: completion.creation_date,
+                    challenge: completion.challenge
+                }))
+            );
         }
     }
-    model.updateLevel(data, callback);
+    model.selectCompletionByUserid(data, callback);
 }
 
-
-//GET garden by user_id
-module.exports.getGardenByUserid = (req, res, next) => {
+// GET garden by user_id
+module.exports.readGardenByUserid = (req, res, next) => {
     const data = {
         owner_id: res.locals.user_id
     }
 
     const callback = (error, results) => {
         if (error) {
-            console.error("Error getGardenByUserid:", error);
+            console.error("Error readGardenByUserid:", error);
             res.status(500).json(error);
         } else if (results.length == 0) {
             res.status(404).json({
@@ -199,6 +279,7 @@ module.exports.getGardenByUserid = (req, res, next) => {
     }
     model.selectGardenByUserid(data, callback);
 }
+
 
 
 
@@ -224,7 +305,7 @@ module.exports.checkUsernameOrEmailExists = (req, res, next) => {
     };
 
     model.selectByUsernameOrEmail(data, callback);
-};
+}
 
 module.exports.register = (req, res, next) => {
     if (req.body.username == undefined || req.body.email == undefined || req.body.password == undefined) {
@@ -283,25 +364,4 @@ module.exports.login = (req, res, next) => {
     }
 
     model.selectByUsernameOrEmail(data, callback)
-}
-
-// GET user by user_id
-module.exports.readUserById = (req, res) => {
-    const data = {
-        user_id: res.locals.user_id
-    }
-
-    const callback = (error, results, fields) => {
-        if (error) {
-            console.error("Error getUserById", error);
-            res.status(500).json(error);
-        } else if (results.length == 0) {
-            res.status(404).json({
-                message: "requested user_id does not exist"
-            });
-        } else {
-            res.status(200).json(results[0])
-        }
-    }
-    model.findUserid(data, callback);
 }

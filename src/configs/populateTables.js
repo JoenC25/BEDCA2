@@ -21,17 +21,18 @@ bcrypt.hash('1234', saltRounds, (error, hash) => {
         const SQLSTATEMENT = `
             INSERT INTO User (username, skillpoints, level, energy, email, password) VALUES
             ('socuser1', 0, 0, 100, 'socuser1@email.com', '${hash}'),
-            ('socuser2', 1000, 5, 100, 'socuser2@email.com', '${hash}');
+            ('socuser2', 1000, 5, 100, 'socuser2@email.com', '${hash}'),
+            ('socuser3', 3450, 8, 100, 'socuser3@email.com', '${hash}');
 
-            INSERT INTO Reviews (review_amt, notes, user_id) VALUES
-            (4, 'I Love BED and this game', 2),
-            (5, 'Website worthy of an A.', 1);
+            INSERT INTO Reviews (review_amt, challenge_id, notes, user_id) VALUES
+            (4, 4, 'I Love BED and this exercise', 2),
+            (5, 2, 'Most fun I\\'ve had', 1);
 
             INSERT INTO Garden (owner_id, garden_name, plant_count) VALUES
             (1, 'Cyber Sprouts', 5),
-            (1, 'Beet It.', 2),
-            (2, 'Garden of Eatin\\'', 1),
-            (1, 'Lawn and Order', 4);
+            (2, 'Beet It.', 2),
+            (1, 'Garden of Eatin\\'', 1),
+            (3, 'Lawn and Order', 4);
             
             INSERT INTO Plant (garden_id, plant_name, tier_num) VALUES
             (1, 'Photon Sprout', 2),
@@ -46,6 +47,10 @@ bcrypt.hash('1234', saltRounds, (error, hash) => {
             (4, 'Spruce', 7),
             (3, 'The tree of knowlegde and evil.', 1),
             (4, 'Potato', 4);
+
+            INSERT INTO UserCompletion (challenge_id, user_id, completed, notes) VALUES
+            (3, 2, false, "too difficult for me..."),
+            (3, 1, true, "I enjoyed every part of it");
         `;
 
         pool.query(SQLSTATEMENT, callback);

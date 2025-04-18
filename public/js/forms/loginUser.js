@@ -7,7 +7,9 @@ document.addEventListener("DOMContentLoaded", function () {
             if (responseData.token) {
                 // Store the token in local storage
                 localStorage.setItem("token", responseData.token);
-                // Redirect or perform further actions for logged-in user
+                // Reset the form fields
+                loginForm.reset();
+                // Redirect logged-in user
                 window.location.href = "index.html";
             }
         } else {
@@ -34,8 +36,5 @@ document.addEventListener("DOMContentLoaded", function () {
         
         // Perform login request
         fetchMethod(currentUrl + "/api/login", callback, "POST", data);
-
-        // Reset the form fields
-        loginForm.reset();
     });
 });
